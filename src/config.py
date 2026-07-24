@@ -22,7 +22,8 @@ CHUNK_OVERLAP = 150
 TOP_K = 4
 
 # LLM
-LLM_MODEL = "gpt-4o-mini"
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+LLM_MODEL = "llama-3.3-70b-versatile"
+LLM_TEMPERATURE = 0.0
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".txt", ".md"}

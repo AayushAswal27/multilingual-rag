@@ -3,16 +3,24 @@ logging.basicConfig(level=logging.WARNING)
 
 from src.retriever import Retriever
 from src.prompts import RAG_PROMPT, format_context
+from src.llm import get_llm
 
 r = Retriever()
-chunks = r.retrieve_relevant("Who is excluded from the scheme?")
+llm = get_llm()
+
+question = "Who is excluded from the scheme?"
+chunks = r.retrieve_relevant(question)
 
 messages = RAG_PROMPT.format_messages(
     language="English",
     context=format_context(chunks),
-    question="Who is excluded from the scheme?",
+    question=question,
 )
 
-for m in messages:
-    print(f"\n{'=' * 70}\n{m.type.upper()}\n{'=' * 70}")
-    print(m.content)
+response = llm.invoke(messages)
+
+print(f"QUESTION: {question}\n")
+print(f"ANSWER:\n{response.content}\n")
+print("SOURCES:")
+for c in chunks:
+    print(f"  - {c.citation}  (distance {c.distance:.3f})")
