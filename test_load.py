@@ -1,26 +1,25 @@
 import logging
 logging.basicConfig(level=logging.WARNING)
 
-from src.retriever import Retriever
-from src.prompts import RAG_PROMPT, format_context
-from src.llm import get_llm
+from src.rag import RAGPipeline
 
-r = Retriever()
-llm = get_llm()
+pipeline = RAGPipeline()
 
-question = "Who is excluded from the scheme?"
-chunks = r.retrieve_relevant(question)
+questions = [
+    "Who is excluded from the scheme?",
+    "इस योजना के तहत कितने पैसे मिलते हैं?",
+    "योजना से कौन बाहर रखा गया है?",
+    "How do I bake a chocolate cake?",
+]
 
-messages = RAG_PROMPT.format_messages(
-    language="English",
-    context=format_context(chunks),
-    question=question,
-)
-
-response = llm.invoke(messages)
-
-print(f"QUESTION: {question}\n")
-print(f"ANSWER:\n{response.content}\n")
-print("SOURCES:")
-for c in chunks:
-    print(f"  - {c.citation}  (distance {c.distance:.3f})")
+for q in questions:
+    r = pipeline.answer(q)
+    print(f"\n{'=' * 70}")
+    print(f"Q [{r.language}]: {q}")
+    print(f"{'=' * 70}")
+    print(f"{r.answer}\n")
+    if r.grounded:
+        for s in r.sources:
+            print(f"  · {s.citation}")
+    else:
+        print("  (no relevant context found)")
