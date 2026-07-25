@@ -1,7 +1,13 @@
 """Streamlit chat interface for the multilingual RAG system."""
 
+from pathlib import Path
+
 import streamlit as st
 
+from src.loaders import load_uploaded_file
+from src.chunking import chunk_documents
+from src.vector_store import build_vector_store
+from src.retriever import Retriever
 from src.rag import RAGPipeline
 
 st.set_page_config(
@@ -12,15 +18,24 @@ st.set_page_config(
 
 
 @st.cache_resource
-def get_pipeline() -> RAGPipeline:
+def get_default_pipeline() -> RAGPipeline:
     """
-    Build the pipeline once and reuse it across every re-run.
+    Pipeline backed by the pre-built index on disk (PM-KISAN).
 
-    Streamlit re-executes this whole script on each interaction.
-    Without caching, the embedding model and LLM client would be
-    rebuilt on every message, making the app unusably slow.
+    Cached so the embedding model and LLM client are built once and
+    reused across Streamlit's re-runs.
     """
     return RAGPipeline()
+
+
+def build_pipeline_from_upload(file) -> RAGPipeline:
+    """Build a pipeline from a freshly uploaded file, in memory."""
+    suffix = Path(file.name).suffix
+    docs = load_uploaded_file(file, suffix)
+    chunks = chunk_documents(docs)
+    store = build_vector_store(chunks)
+    retriever = Retriever(store=store)
+    return RAGPipeline(retriever=retriever)
 
 
 def main() -> None:
@@ -30,11 +45,32 @@ def main() -> None:
         "Answers come only from the indexed documents."
     )
 
-    try:
-        pipeline = get_pipeline()
-    except Exception as exc:
-        st.error(f"Could not start the assistant: {exc}")
-        st.stop()
+    uploaded = st.file_uploader(
+        "Upload a document to ask about (PDF, DOCX, TXT, MD)",
+        type=["pdf", "docx", "txt", "md"],
+    )
+
+    if uploaded is not None:
+        # Only re-index when a genuinely new file appears — otherwise
+        # every re-run would re-embed the whole document.
+        if st.session_state.get("uploaded_name") != uploaded.name:
+            with st.spinner(f"Indexing {uploaded.name}..."):
+                try:
+                    st.session_state.pipeline = build_pipeline_from_upload(uploaded)
+                    st.session_state.uploaded_name = uploaded.name
+                    st.session_state.messages = []  # fresh chat for a new doc
+                except Exception as exc:
+                    st.error(f"Could not index that file: {exc}")
+                    st.stop()
+        pipeline = st.session_state.pipeline
+        st.caption(f"Answering from: **{uploaded.name}**")
+    else:
+        try:
+            pipeline = get_default_pipeline()
+        except Exception as exc:
+            st.error(f"Could not start the assistant: {exc}")
+            st.stop()
+        st.caption("Answering from: **PM-KISAN guidelines** (default)")
 
     # Chat history lives in session state — survives re-runs
     if "messages" not in st.session_state:
