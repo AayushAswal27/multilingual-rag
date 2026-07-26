@@ -8,4 +8,4 @@ vectordb/*
 !vectordb/.gitkeep
 *.bin
 .DS_Store
-.ipynb_checkpoints/
+.ipynb_checkpoints/test_load.py
