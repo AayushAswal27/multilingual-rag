@@ -1,8 +1,23 @@
-## 🚀 Live Demo
+##  Live Demo
 
 **[Try it live → multilingual-rag.streamlit.app](https://multilingual-rag-jbqopnmv6vvnsbfs4czyyc.streamlit.app/)**
 
 Ask questions in Hindi, English, Bengali, or Tamil about the indexed documents — answers are grounded in the source text with citations.
+
+
+## Screenshots
+
+**Cross-lingual: Hindi question answered from an English document**
+
+![Hindi demo](images/demo-hindi.png)
+
+**English question with source citations**
+
+![English demo](images/demo-english.png)
+
+**Honest behavior — refuses when no relevant content exists**
+
+![Not found demo](images/demo-notfound.png)
 
 
 # Multilingual Document Assistant (RAG)
