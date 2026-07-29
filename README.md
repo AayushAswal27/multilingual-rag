@@ -1,3 +1,10 @@
+## 🚀 Live Demo
+
+**[Try it live → multilingual-rag.streamlit.app](https://multilingual-rag-jbqopnmv6vvnsbfs4czyyc.streamlit.app/)**
+
+Ask questions in Hindi, English, Bengali, or Tamil about the indexed documents — answers are grounded in the source text with citations.
+
+
 # Multilingual Document Assistant (RAG)
 
 A Retrieval-Augmented Generation system that answers questions about documents in **Hindi, English, and other Indian languages** — retrieving from a knowledge base that may be in a *different* language than the question.
