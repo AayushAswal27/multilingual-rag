@@ -15,11 +15,11 @@ VECTORDB_DIR = ROOT_DIR / "vectordb"
 EMBEDDING_MODEL = "paraphrase-multilingual-MiniLM-L12-v2"
 
 # Chunking
-CHUNK_SIZE = 800
-CHUNK_OVERLAP = 150
+CHUNK_SIZE = 100
+CHUNK_OVERLAP = 200
 
 # Retrieval
-TOP_K = 4
+TOP_K = 6
 
 # LLM
 LLM_MODEL = "llama-3.3-70b-versatile"
