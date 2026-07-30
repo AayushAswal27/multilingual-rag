@@ -15,7 +15,7 @@ VECTORDB_DIR = ROOT_DIR / "vectordb"
 EMBEDDING_MODEL = "paraphrase-multilingual-MiniLM-L12-v2"
 
 # Chunking
-CHUNK_SIZE = 100
+CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
 
 # Retrieval
